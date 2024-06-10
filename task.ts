@@ -56,28 +56,34 @@ export default class Task extends ETL {
         }
 
         const url = new URL(`https://external.dronesense.com/v1/drones/with-sensors`)
-        const droneres = await fetch(url);
-
-        const json = await droneres.typed(DroneSenseLocation);
-
-        /*
-        const feat: Feature<Geometry, Record<string, any>> = {
-            id: `wildweb-${fire.uuid}`,
-            type: 'Feature',
-            properties: {
-                callsign: fire.name,
-                metadata: {
-                    ...fire
-                }
-            },
-            geometry: {
-                type: 'Point',
-                coordinates: [ Number(fire.longitude) * -1, Number(fire.latitude) ]
+        const droneres = await fetch(url, {
+            headers: {
+                'X-API-KEY': env.DroneSenseToken
             }
-        };
+        });
 
-        fc.features.push(feat);
-        */
+        const records = await droneres.typed(Type.Array(DroneSenseLocation));
+
+        for (const record of records) {
+            const feat: Feature<Geometry, Record<string, any>> = {
+                id: record.id,
+                type: 'Feature',
+                properties: {
+                    callsign: record.callSign,
+                    speed: record.speed,
+                    course: record.heading,
+                    metadata: {
+                        ...record
+                    }
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [ record.longitude, record.latitude, record.altitudeAgl ]
+                }
+            };
+
+            fc.features.push(feat);
+        }
 
         await this.submit(fc);
     }
