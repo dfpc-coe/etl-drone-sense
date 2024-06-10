@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v1.1.0
+
+- :rocket: Include `video` Key
+- :rocket: Include `video` Associated Link
+
 ### v1.0.1
 
 - :rocket: Initial to Feature conversion

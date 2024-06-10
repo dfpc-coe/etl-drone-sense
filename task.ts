@@ -21,7 +21,8 @@ const DroneSenseLocation = Type.Object({
     sensors: Type.Array(Type.Object({
         id: Type.String(),
         name: Type.String(),
-        video_url: Type.String()
+        video_url: Type.Optional(Type.String()),
+        rtsp_url: Type.Optional(Type.String())
     }))
 });
 
@@ -69,9 +70,11 @@ export default class Task extends ETL {
                 id: record.id,
                 type: 'Feature',
                 properties: {
+                    type: 'a-f-A-M-H-Q',
                     callsign: record.callSign,
                     speed: record.speed,
                     course: record.heading,
+                    links: [],
                     metadata: {
                         ...record
                     }
@@ -81,6 +84,27 @@ export default class Task extends ETL {
                     coordinates: [ record.longitude, record.latitude, record.altitudeAgl ]
                 }
             };
+
+            if (record.sensors.length > 0) {
+                // TODO Investiate multiple Video sources on a single CoT
+                for (const sensor of record.sensors) {
+                    if (!sensor.rtsp_url) continue;
+
+                    feat.properties.video = {
+                        url: sensor.rtsp_url
+                    }
+
+                    feat.properties.links.push({
+                        id: record.id,
+                        relation: 'r-u',
+                        type: 'text/html',
+                        url: sensor.video_url,
+                        remarks: 'DroneSense Viewer'
+                    });
+
+                    break;
+                }
+            }
 
             fc.features.push(feat);
         }
