@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v1.2.0
+
+- :arrow_up: Update to latest Base Library
+- :rocket: Start to add Video Config Properties
+
 ### v1.1.0
 
 - :rocket: Include `video` Key

@@ -1,7 +1,5 @@
-import moment from 'moment';
 import { Static, Type, TSchema } from '@sinclair/typebox';
-import { FeatureCollection, Feature, Geometry } from 'geojson';
-import ETL, { Event, SchemaType, handler as internal, local, env } from '@tak-ps/etl';
+import ETL, { Event, SchemaType, handler as internal, local, InputFeatureCollection, InputFeature } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
 const DroneSenseLocation = Type.Object({
@@ -37,6 +35,8 @@ const Environment = Type.Object({
 })
 
 export default class Task extends ETL {
+    static name = 'etl-drone-sense';
+
     async schema(type: SchemaType = SchemaType.Input): Promise<TSchema> {
         if (type === SchemaType.Input) {
             return Environment;
@@ -51,7 +51,7 @@ export default class Task extends ETL {
         const env = layer.environment as Static<typeof Environment>;
         if (!env.DroneSenseToken) throw new Error('No DroneSenseToken Provided');
 
-        const fc: FeatureCollection = {
+        const fc: Static<typeof InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
         }
@@ -66,7 +66,7 @@ export default class Task extends ETL {
         const records = await droneres.typed(Type.Array(DroneSenseLocation));
 
         for (const record of records) {
-            const feat: Feature<Geometry, Record<string, any>> = {
+            const feat: Static<typeof InputFeature> = {
                 id: record.id,
                 type: 'Feature',
                 properties: {
@@ -91,11 +91,26 @@ export default class Task extends ETL {
                     if (!sensor.rtsp_url) continue;
 
                     feat.properties.video = {
-                        url: sensor.rtsp_url
+                        uid: record.id,
+                        sensor: `${record.callSign}-camera`,
+                        url: sensor.rtsp_url,
+                        connection: {
+                            uid: record.id,
+                            networkTimeout: 12000,
+                            path: '',
+                            protocol: 'raw',
+                            bufferTime: -1,
+                            address: sensor.rtsp_url,
+                            port: -1,
+                            roverPort: -1,
+                            rtspReliable: 0,
+                            ignoreEmbeddedKLV: false,
+                            alias: record.callSign
+                        }
                     }
 
                     feat.properties.links.push({
-                        id: record.id,
+                        uid: record.id,
                         relation: 'r-u',
                         type: 'text/html',
                         url: sensor.video_url,
@@ -113,9 +128,8 @@ export default class Task extends ETL {
     }
 }
 
-env(import.meta.url)
-await local(new Task(), import.meta.url);
+await local(new Task(import.meta.url), import.meta.url);
 export async function handler(event: Event = {}) {
-    return await internal(new Task(), event);
+    return await internal(new Task(import.meta.url), event);
 }
 
