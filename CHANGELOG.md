@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.3.0
+
+- :tada: Add capabilities API
+
 ### v1.2.0
 
 - :arrow_up: Update to latest Base Library
