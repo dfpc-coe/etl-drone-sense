@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.0.2
+
+- :arrow_up: Update Core Deps
+
 ### v2.0.1
 
 - :rocket: Use unified `env()` call
