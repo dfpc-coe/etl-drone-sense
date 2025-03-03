@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.0.1
+
+- :rocket: Use unified `env()` call
+
 ### v2.0.0
 
 - :tada: Update to `CloudTAK@v6`

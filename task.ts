@@ -55,10 +55,7 @@ export default class Task extends ETL {
     }
 
     async control(): Promise<void> {
-        const layer = await this.fetchLayer();
-
-        const env = layer.environment as Static<typeof Environment>;
-        if (!env.DroneSenseToken) throw new Error('No DroneSenseToken Provided');
+        const env = await this.env(Environment);
 
         const fc: Static<typeof InputFeatureCollection> = {
             type: 'FeatureCollection',
