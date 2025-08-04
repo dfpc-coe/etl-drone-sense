@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.1.0
+
+- :arrow_up: Update Core Deps
+
 ### v2.0.2
 
 - :arrow_up: Update Core Deps
