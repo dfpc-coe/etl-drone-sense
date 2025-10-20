@@ -1,5 +1,6 @@
 import { Static, Type, TSchema } from '@sinclair/typebox';
-import ETL, { Event, SchemaType, handler as internal, local, InputFeatureCollection, InputFeature, DataFlowType, InvocationType } from '@tak-ps/etl';
+import { Feature } from '@tak-ps/node-cot';
+import ETL, { Event, SchemaType, handler as internal, local, DataFlowType, InvocationType } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
 const DroneSenseLocation = Type.Object({
@@ -57,7 +58,7 @@ export default class Task extends ETL {
     async control(): Promise<void> {
         const env = await this.env(Environment);
 
-        const fc: Static<typeof InputFeatureCollection> = {
+        const fc: Static<typeof Feature.InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
         }
@@ -70,11 +71,11 @@ export default class Task extends ETL {
         });
 
         const records = await droneres.typed(Type.Array(DroneSenseLocation), {
-            verbose: true || env.DEBUG
+            verbose: env.DEBUG
         });
 
         for (const record of records) {
-            const feat: Static<typeof InputFeature> = {
+            const feat: Static<typeof Feature.InputFeature> = {
                 id: record.id,
                 type: 'Feature',
                 properties: {
