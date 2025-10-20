@@ -69,7 +69,9 @@ export default class Task extends ETL {
             }
         });
 
-        const records = await droneres.typed(Type.Array(DroneSenseLocation));
+        const records = await droneres.typed(Type.Array(DroneSenseLocation), {
+            verbose: true || env.DEBUG
+        });
 
         for (const record of records) {
             const feat: Static<typeof InputFeature> = {
