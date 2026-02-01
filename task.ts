@@ -3,6 +3,52 @@ import { Feature } from '@tak-ps/node-cot';
 import ETL, { Event, SchemaType, handler as internal, local, DataFlowType, InvocationType } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
 
+/**
+ * Calculate the bearing (azimuth) from point 1 to point 2.
+ * @param lat1 - Latitude of starting point (degrees)
+ * @param lon1 - Longitude of starting point (degrees)
+ * @param lat2 - Latitude of destination point (degrees)
+ * @param lon2 - Longitude of destination point (degrees)
+ * @returns Bearing in degrees (0-360, where 0 is north)
+ */
+function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+    const deltaLon = (lon2 - lon1) * Math.PI / 180;
+
+    const x = Math.sin(deltaLon) * Math.cos(lat2Rad);
+    const y = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+        Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(deltaLon);
+
+    const bearing = Math.atan2(x, y) * 180 / Math.PI;
+
+    // Normalize to 0-360
+    return (bearing + 360) % 360;
+}
+
+/**
+ * Calculate the distance between two points using Haversine formula.
+ * @param lat1 - Latitude of point 1 (degrees)
+ * @param lon1 - Longitude of point 1 (degrees)
+ * @param lat2 - Latitude of point 2 (degrees)
+ * @param lon2 - Longitude of point 2 (degrees)
+ * @returns Distance in meters
+ */
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371000; // Earth's radius in meters
+
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+    const deltaLat = (lat2 - lat1) * Math.PI / 180;
+    const deltaLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(deltaLat / 2) ** 2 +
+        Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+}
+
 const DroneSenseLocation = Type.Object({
     id: Type.String(),
     callSign: Type.String(),
@@ -128,6 +174,38 @@ export default class Task extends ETL {
 
                     break;
                 }
+            }
+
+            // Add sensor FOV when SPOI (Sensor Point of Interest) data is available
+            // SPOI indicates where the drone's camera is pointing
+            if (record.spoiLat !== 0 && record.spoiLng !== 0) {
+                const azimuth = calculateBearing(
+                    record.latitude, record.longitude,
+                    record.spoiLat, record.spoiLng
+                );
+                const range = calculateDistance(
+                    record.latitude, record.longitude,
+                    record.spoiLat, record.spoiLng
+                );
+
+                feat.properties.sensor = {
+                    azimuth: azimuth,
+                    fov: 45,
+                    vfov: 45,
+                    range: range,
+                    elevation: 0,
+                    roll: 0,
+                    displayMagneticReference: 0,
+                    strokeColor: -16777216,
+                    strokeWeight: 0.5,
+                    fovRed: 1.0,
+                    fovGreen: 0.5,
+                    fovBlue: 0.0,
+                    fovAlpha: 0.3,
+                    rangeLines: 100,
+                    rangeLineStrokeColor: -16777216,
+                    rangeLineStrokeWeight: 1.0
+                };
             }
 
             fc.features.push(feat);
