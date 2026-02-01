@@ -178,7 +178,7 @@ export default class Task extends ETL {
 
             // Add sensor FOV when SPOI (Sensor Point of Interest) data is available
             // SPOI indicates where the drone's camera is pointing
-            if (record.spoiLat !== 0 || record.spoiLng !== 0) {
+            if (record.spoiLat !== 0 && record.spoiLng !== 0) {
                 const azimuth = calculateBearing(
                     record.latitude, record.longitude,
                     record.spoiLat, record.spoiLng
