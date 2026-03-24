@@ -13,7 +13,8 @@
     "author": "Nick Ingalls <nick@ingalls.ca>",
     "license": "ISC",
     "devDependencies": {
-        "eslint": "^9.0.0",
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.0.0",
         "typescript": "^5.0.4",
         "typescript-eslint": "^8.0.0"
     },
