@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.7.0
+
+- :arrow_up: Update Core Deps
+
 ### v2.6.0
 
 - :rocket: Add Sensor FOV
