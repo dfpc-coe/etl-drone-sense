@@ -164,6 +164,8 @@ export default class Task extends ETL {
                         }
                     }
 
+                    feat.properties.links = feat.properties.links ?? [];
+
                     feat.properties.links.push({
                         uid: record.id,
                         relation: 'r-u',
