@@ -1,0 +1,27 @@
+{
+    "version": "1.0",
+    "name": "DroneSense",
+    "description": "Ingests drone telemetry from DroneSense and posts aircraft positions to the map.",
+    "compute": {
+        "memory": 512,
+        "timeout": 60
+    },
+    "permissions": [
+        {
+            "resource": "feature:*",
+            "required": true,
+            "description": "DroneSense posts drone positions to the map"
+        }
+    ],
+    "invocations": {
+        "incoming": {
+            "schedule": {
+                "description": "Polls DroneSense for updated drone telemetry on a schedule.",
+                "default": {
+                    "enabled": true,
+                    "schedule": "rate(1 minute)"
+                }
+            }
+        }
+    }
+}

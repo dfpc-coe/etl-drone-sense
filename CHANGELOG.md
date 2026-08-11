@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v2.12.0
+
+- :rocket: Add Capabilities document
+- :arrow_up: Update GH Actions
+
 ### v2.11.0
 
 - :arrow_up: Update Core Dependencies
