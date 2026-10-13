@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v2.13.0
+
+- :arrow_up: Update Core Dependencies
+
 ### v2.12.0
 
 - :rocket: Add Capabilities document
