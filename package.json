@@ -23,6 +23,8 @@
     },
     "dependencies": {
         "@sinclair/typebox": "^0.34.0",
-        "@tak-ps/etl": "^10.0.0"
+        "@tak-ps/etl": "^11.0.0",
+        "@turf/bearing": "^7.4.0",
+        "@turf/distance": "^7.4.0"
     }
 }

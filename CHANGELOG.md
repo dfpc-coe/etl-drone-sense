@@ -12,6 +12,10 @@
 
 ### Pending Release
 
+### v2.15.0
+
+- :rocket: Migrate to use Turf instead of internal functions for geospatial calculations
+
 ### v2.14.0
 
 - :tada: Add optional `DroneSensePartnerKey` environment variable sent as the `x-partner-key` header
