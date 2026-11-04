@@ -75,6 +75,9 @@ const Environment = Type.Object({
     DroneSenseToken: Type.String({
         description: 'API Token to use when making Drone Sense API Calls',
     }),
+    DroneSensePartnerKey: Type.Optional(Type.String({
+        description: 'Partner Key sent as the x-partner-key header on Drone Sense API Calls',
+    })),
     'DEBUG': Type.Boolean({
         default: false,
         description: 'Print results in logs'
@@ -109,12 +112,16 @@ export default class Task extends ETL {
             features: []
         }
 
+        const headers: Record<string, string> = {
+            'X-API-KEY': env.DroneSenseToken
+        };
+
+        if (env.DroneSensePartnerKey) {
+            headers['x-partner-key'] = env.DroneSensePartnerKey;
+        }
+
         const url = new URL(`https://external.dronesense.com/v1/drones/with-sensors`)
-        const droneres = await fetch(url, {
-            headers: {
-                'X-API-KEY': env.DroneSenseToken
-            }
-        });
+        const droneres = await fetch(url, { headers });
 
         const records = await droneres.typed(Type.Array(DroneSenseLocation), {
             verbose: env.DEBUG

@@ -10,6 +10,12 @@
 
 ## Version History
 
+### Pending Release
+
+### v2.14.0
+
+- :tada: Add optional `DroneSensePartnerKey` environment variable sent as the `x-partner-key` header
+
 ### v2.13.0
 
 - :arrow_up: Update Core Dependencies
