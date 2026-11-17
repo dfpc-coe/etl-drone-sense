@@ -2,8 +2,8 @@ import { Static, Type, TSchema } from '@sinclair/typebox';
 import { Feature } from '@tak-ps/node-cot';
 import ETL, { Event, SchemaType, handler as internal, local, DataFlowType, InvocationType } from '@tak-ps/etl';
 import { fetch } from '@tak-ps/etl';
-import bearing from '@turf/bearing';
-import distance from '@turf/distance';
+import { bearing } from '@turf/bearing';
+import { distance } from '@turf/distance';
 
 const DroneSenseLocation = Type.Object({
     id: Type.String(),
@@ -50,14 +50,12 @@ export default class Task extends ETL {
         flow: DataFlowType = DataFlowType.Incoming
     ): Promise<TSchema> {
         if (flow === DataFlowType.Incoming) {
-            if (type === SchemaType.Input) {
-                return Environment;
-            } else {
-                return DroneSenseLocation;
-            }
-        } else {
-            return Type.Object({});
+            if (type === SchemaType.Input) return Environment;
+
+            return DroneSenseLocation;
         }
+
+        return Type.Object({});
     }
 
     async control(): Promise<void> {
@@ -108,7 +106,7 @@ export default class Task extends ETL {
             };
 
             if (record.sensors.length > 0) {
-                // TODO Investiate multiple Video sources on a single CoT
+                // Only the first sensor with an RTSP URL is used
                 for (const sensor of record.sensors) {
                     if (!sensor.rtsp_url) continue;
 
@@ -181,7 +179,7 @@ export default class Task extends ETL {
 }
 
 await local(await Task.init(import.meta.url), import.meta.url);
-export async function handler(event: Event = {}) {
-    return await internal(await Task.init(import.meta.url), event);
+export async function handler(event: Event = {}): ReturnType<typeof internal> {
+    return internal(await Task.init(import.meta.url), event);
 }
 
